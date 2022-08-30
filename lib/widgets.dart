@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
-Widget inputFile({label, obscureText = false}) {
+Widget inputFile({
+  label,
+  obscureText = false,
+}) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: <Widget>[
@@ -18,20 +21,21 @@ Widget inputFile({label, obscureText = false}) {
       TextField(
         obscureText: obscureText,
         decoration: const InputDecoration(
-            contentPadding: EdgeInsets.symmetric(
-              vertical: 0,
-              horizontal: 10,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey),
-            ),
-            border: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey),
-            )),
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 0,
+            horizontal: 10,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey),
+          ),
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey),
+          ),
+        ),
       ),
       const SizedBox(
         height: 10,
-      )
+      ),
     ],
   );
 }

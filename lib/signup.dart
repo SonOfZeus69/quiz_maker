@@ -17,17 +17,6 @@ class _SignUpState extends State<SignUp> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => const SignIn()));
-          },
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            size: 23,
-            color: Colors.black,
-          ),
-        ),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -41,7 +30,10 @@ class _SignUpState extends State<SignUp> {
                 children: <Widget>[
                   const Text(
                     'Sign Up',
-                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 20),
                   Text(
@@ -74,13 +66,14 @@ class _SignUpState extends State<SignUp> {
               Container(
                 padding: const EdgeInsets.only(top: 3),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50),
-                    border: const Border(
-                      bottom: BorderSide(color: Colors.black),
-                      top: BorderSide(color: Colors.black),
-                      left: BorderSide(color: Colors.black),
-                      right: BorderSide(color: Colors.black),
-                    )),
+                  borderRadius: BorderRadius.circular(50),
+                  border: const Border(
+                    bottom: BorderSide(color: Colors.black),
+                    top: BorderSide(color: Colors.black),
+                    left: BorderSide(color: Colors.black),
+                    right: BorderSide(color: Colors.black),
+                  ),
+                ),
                 child: MaterialButton(
                   minWidth: double.infinity,
                   height: 60,
@@ -102,7 +95,10 @@ class _SignUpState extends State<SignUp> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const Text('Already have an account?'),
+                  const Text(
+                    'Already have an account?',
+                    style: TextStyle(),
+                  ),
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).push(MaterialPageRoute(
@@ -110,8 +106,10 @@ class _SignUpState extends State<SignUp> {
                     },
                     child: const Text(
                       'Sign In',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   )
                 ],
