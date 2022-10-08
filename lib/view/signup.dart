@@ -88,7 +88,7 @@ class _SignUpState extends State<SignUp> {
                       validator: (value) {
                         RegExp regex = RegExp(r'^.{3,}$');
                         if (value!.isEmpty) {
-                          return ("Username cannot be empty");
+                          return ("This field is required");
                         }
                         if (!regex.hasMatch(value)) {
                           return ("Enter valid Username(Min. 3 Characters)");
@@ -118,7 +118,7 @@ class _SignUpState extends State<SignUp> {
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return ("Please Enter Your Email");
+                          return ("This field is required");
                         }
                         // reg expression for email validation
                         if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
@@ -151,7 +151,7 @@ class _SignUpState extends State<SignUp> {
                       validator: (value) {
                         RegExp regex = RegExp(r'^.{6,}$');
                         if (value!.isEmpty) {
-                          return ("This field is required for login");
+                          return ("This field is required");
                         }
                         if (!regex.hasMatch(value)) {
                           return ("Please enter a valid Password(Min. 6 Characters)");

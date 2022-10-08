@@ -3,7 +3,7 @@ import 'package:quiz_maker/services/auth/auth_exceptions.dart';
 import 'package:quiz_maker/services/auth/auth_service.dart';
 import 'package:quiz_maker/utilities/show_error_dialog.dart';
 import 'package:quiz_maker/view/signup.dart';
-import 'package:quiz_maker/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({Key? key}) : super(key: key);
@@ -15,6 +15,9 @@ class SignIn extends StatefulWidget {
 class _SignInState extends State<SignIn> {
   // Form key
   final _formKey = GlobalKey<FormState>();
+
+  //Circularprogressindicator
+  bool _isLoading = false;
 
   // Text Editing Controller
   late final TextEditingController _email;
@@ -52,207 +55,223 @@ class _SignInState extends State<SignIn> {
           ),
         ),
       ),
-      body: Form(
-        key: _formKey,
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height,
-          width: double.infinity,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Expanded(
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : Form(
+              key: _formKey,
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height,
+                width: double.infinity,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Column(
-                      children: <Widget>[
-                        const Text(
-                          'Sign In',
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          'Sign in to your account',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.grey[700],
-                          ),
-                        )
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                    Expanded(
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
-                          TextFormField(
-                            autofocus: false,
-                            controller: _email,
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return ("Please Enter Your Email");
-                              }
-                              // reg expression for email validation
-                              if (!RegExp(
-                                      "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
-                                  .hasMatch(value)) {
-                                return ("Please enter a valid Email");
-                              }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _email.text = value!;
-                            },
-                            textInputAction: TextInputAction.next,
-                            decoration: InputDecoration(
-                              prefixIcon: const Icon(Icons.mail),
-                              contentPadding:
-                                  const EdgeInsets.fromLTRB(20, 15, 20, 15),
-                              hintText: "Email",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                          Column(
+                            children: <Widget>[
+                              const Text(
+                                'Sign In',
+                                style: TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
+                              const SizedBox(height: 20),
+                              Text(
+                                'Sign in to your account',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.grey[700],
+                                ),
+                              )
+                            ],
                           ),
-                          const SizedBox(
-                            height: 20,
-                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 40),
+                            child: Column(
+                              children: <Widget>[
+                                TextFormField(
+                                  autofocus: false,
+                                  controller: _email,
+                                  keyboardType: TextInputType.emailAddress,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return ("This field is required");
+                                    }
+                                    // reg expression for email validation
+                                    if (!RegExp(
+                                            "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
+                                        .hasMatch(value)) {
+                                      return ("Please enter a valid Email");
+                                    }
+                                    return null;
+                                  },
+                                  onSaved: (value) {
+                                    _email.text = value!;
+                                  },
+                                  textInputAction: TextInputAction.next,
+                                  decoration: InputDecoration(
+                                    prefixIcon: const Icon(Icons.mail),
+                                    contentPadding: const EdgeInsets.fromLTRB(
+                                        20, 15, 20, 15),
+                                    hintText: "Email",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
 
-                          //password field
-                          TextFormField(
-                            autofocus: false,
-                            controller: _password,
-                            obscureText: true,
-                            validator: (value) {
-                              RegExp regex = RegExp(r'^.{6,}$');
-                              if (value!.isEmpty) {
-                                return ("Password is required for login");
-                              }
-                              if (!regex.hasMatch(value)) {
-                                return ("Enter Valid Password(Min. 6 Character)");
-                              }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _password.text = value!;
-                            },
-                            textInputAction: TextInputAction.done,
-                            decoration: InputDecoration(
-                              prefixIcon: const Icon(Icons.vpn_key),
-                              contentPadding:
-                                  const EdgeInsets.fromLTRB(20, 15, 20, 15),
-                              hintText: "Password",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                                //password field
+                                TextFormField(
+                                  autofocus: false,
+                                  controller: _password,
+                                  obscureText: true,
+                                  validator: (value) {
+                                    RegExp regex = RegExp(r'^.{6,}$');
+                                    if (value!.isEmpty) {
+                                      return ("This field is required");
+                                    }
+                                    if (!regex.hasMatch(value)) {
+                                      return ("Enter Valid Password(Min. 6 Character)");
+                                    }
+                                    return null;
+                                  },
+                                  onSaved: (value) {
+                                    _password.text = value!;
+                                  },
+                                  textInputAction: TextInputAction.done,
+                                  decoration: InputDecoration(
+                                    prefixIcon: const Icon(Icons.vpn_key),
+                                    contentPadding: const EdgeInsets.fromLTRB(
+                                        20, 15, 20, 15),
+                                    hintText: "Password",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 40),
+                            child: Container(
+                              padding: const EdgeInsets.only(top: 3),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                border: const Border(
+                                  bottom: BorderSide(color: Colors.black),
+                                  top: BorderSide(color: Colors.black),
+                                  left: BorderSide(color: Colors.black),
+                                  right: BorderSide(color: Colors.black),
+                                ),
+                              ),
+                              child: MaterialButton(
+                                minWidth: double.infinity,
+                                height: 60,
+                                color: Colors.blue.shade800,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                onPressed: () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    try {
+                                      setState(() {
+                                        _isLoading = true;
+                                      });
+                                      await AuthService.Firebase().logIn(
+                                          email: _email.text,
+                                          password: _password.text);
+                                      SharedPreferences prefs =
+                                          await SharedPreferences.getInstance();
+                                      prefs.setString(
+                                          'email', 'useremail@gmail.com');
+
+                                      // ignore: use_build_context_synchronously
+                                      Navigator.of(context)
+                                          .pushNamedAndRemoveUntil(
+                                        '/home/',
+                                        (_) => false,
+                                      );
+                                    } on UserNotFoundAuthException {
+                                      await showErrorDialog(
+                                        context,
+                                        'User not found',
+                                      );
+                                    } on WrongPasswordAuthException {
+                                      await showErrorDialog(
+                                        context,
+                                        'Wrong Password',
+                                      );
+                                    } on GenericAuthException {
+                                      await showErrorDialog(
+                                        context,
+                                        'Wrong Credentials',
+                                      );
+                                    }
+                                    setState(() {
+                                      _isLoading = false;
+                                    });
+                                  }
+                                },
+                                child: const Text(
+                                  'Login',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white),
+                                ),
                               ),
                             ),
                           ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              const Text(
+                                'Don\'t have an account yet?',
+                                style: TextStyle(),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => const SignUp()));
+                                },
+                                child: const Text(
+                                  'Sign Up',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                          Container(
+                            padding: const EdgeInsets.only(top: 100),
+                            height: 200,
+                            decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                  // ignore: unnecessary_string_escapes
+                                  image:
+                                      AssetImage('asset/images/manunlock.gif'),
+                                  fit: BoxFit.fitHeight),
+                            ),
+                          )
                         ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 40),
-                      child: Container(
-                        padding: const EdgeInsets.only(top: 3),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          border: const Border(
-                            bottom: BorderSide(color: Colors.black),
-                            top: BorderSide(color: Colors.black),
-                            left: BorderSide(color: Colors.black),
-                            right: BorderSide(color: Colors.black),
-                          ),
-                        ),
-                        child: MaterialButton(
-                          minWidth: double.infinity,
-                          height: 60,
-                          color: Colors.blue.shade800,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          onPressed: () async {
-                            if (_formKey.currentState!.validate()) {
-                              try {
-                                await AuthService.Firebase().logIn(
-                                    email: _email.text,
-                                    password: _password.text);
-
-                                // ignore: use_build_context_synchronously
-                                Navigator.of(context).pushNamedAndRemoveUntil(
-                                  '/home/',
-                                  (_) => false,
-                                );
-                              } on UserNotFoundAuthException {
-                                await showErrorDialog(
-                                  context,
-                                  'User not found',
-                                );
-                              } on WrongPasswordAuthException {
-                                await showErrorDialog(
-                                  context,
-                                  'Wrong Password',
-                                );
-                              } on GenericAuthException {
-                                await showErrorDialog(
-                                  context,
-                                  'Wrong Credentials',
-                                );
-                              }
-                            }
-                          },
-                          child: const Text(
-                            'Login',
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        const Text(
-                          'Don\'t have an account yet?',
-                          style: TextStyle(),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const SignUp()));
-                          },
-                          child: const Text(
-                            'Sign Up',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                    Container(
-                      padding: const EdgeInsets.only(top: 100),
-                      height: 200,
-                      decoration: const BoxDecoration(
-                        image: DecorationImage(
-                            // ignore: unnecessary_string_escapes
-                            image: AssetImage('asset/images/manunlock.gif'),
-                            fit: BoxFit.fitHeight),
                       ),
                     )
                   ],
                 ),
-              )
-            ],
-          ),
-        ),
-      ),
+              ),
+            ),
     );
   }
 }

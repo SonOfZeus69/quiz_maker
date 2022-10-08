@@ -36,6 +36,7 @@ dependencies:
   firebase_core: ^1.21.1
   firebase_auth: ^3.8.0
   another_flushbar: ^1.12.29
+  shared_preferences: ^2.0.15
 
 dev_dependencies:
   flutter_test:
