@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_maker/services/Database.dart';
 import 'package:quiz_maker/utilities/show_error_dialog.dart';
 import 'package:quiz_maker/view/add_questions.dart';
 import 'package:quiz_maker/view/home.dart';
+import 'package:random_string/random_string.dart';
 
 class CreateQuiz extends StatefulWidget {
   const CreateQuiz({Key? key}) : super(key: key);
@@ -16,6 +18,8 @@ class _CreateQuizState extends State<CreateQuiz> {
 
   //Circularprogressindicator
   bool _isLoading = false;
+
+  late String quizId;
 
   // Text Editing Controller
   late final TextEditingController _quizImg;
@@ -40,6 +44,8 @@ class _CreateQuizState extends State<CreateQuiz> {
 
     super.dispose();
   }
+
+  DatabaseService databaseService = DatabaseService();
 
   @override
   Widget build(BuildContext context) {
@@ -153,7 +159,6 @@ class _CreateQuizState extends State<CreateQuiz> {
                         ),
                       ),
                     ),
-                    
                     Expanded(
                       child: Align(
                         alignment: Alignment.bottomCenter,
@@ -179,25 +184,13 @@ class _CreateQuizState extends State<CreateQuiz> {
                                 borderRadius: BorderRadius.circular(50),
                               ),
                               onPressed: () async {
-                                if (_formKey.currentState!.validate()) {
-                                  try {
-                                    setState(() {
-                                      _isLoading = true;
-                                    });
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const AddQuestions()));
-                                  } catch (e) {
-                                    await showErrorDialog(
-                                      context,
-                                      e.toString(),
-                                    );
-                                  }
-                                  setState(() {
-                                    _isLoading = false;
-                                  });
+                                try {
+                                  createQuiz();
+                                } catch (e) {
+                                  await showErrorDialog(
+                                    context,
+                                    e.toString(),
+                                  );
                                 }
                               },
                               child: const Text(
@@ -220,5 +213,31 @@ class _CreateQuizState extends State<CreateQuiz> {
               ),
             ),
     );
+  }
+
+  createQuiz() {
+    quizId = randomAlphaNumeric(16);
+    print(quizId);
+
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      Map<String, String> quizData = {
+        "quizId": quizId,
+        "quizImgUrl": _quizImg.text,
+        "quizTitle": _quizTitle.text,
+        "quizDesc": _quizDesc.text,
+      };
+
+      databaseService.addQuizData(quizData, quizId).then((value) {
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => AddQuestions(quizId)));
+      });
+    }
   }
 }

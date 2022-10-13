@@ -29,6 +29,13 @@
             {
               "client_id": "144980210127-p9k1vkch2fpvjdvc89eerj43mckgdjb0.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "144980210127-03fgchipoj2ktg4b6ohhqm0kepniuk59.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.quizMaker"
+              }
             }
           ]
         }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_maker/services/database.dart';
 import 'package:quiz_maker/utilities/show_error_dialog.dart';
 import 'package:quiz_maker/view/create_quiz.dart';
 
 class AddQuestions extends StatefulWidget {
-  const AddQuestions({Key? key}) : super(key: key);
+  final String quizId;
+  const AddQuestions(this.quizId, {Key? key}) : super(key: key);
 
   @override
   State<AddQuestions> createState() => _AddQuestionsState();
@@ -44,6 +46,8 @@ class _AddQuestionsState extends State<AddQuestions> {
 
     super.dispose();
   }
+
+  DatabaseService databaseService = DatabaseService();
 
   @override
   Widget build(BuildContext context) {
@@ -226,25 +230,13 @@ class _AddQuestionsState extends State<AddQuestions> {
                                   borderRadius: BorderRadius.circular(50),
                                 ),
                                 onPressed: () async {
-                                  if (_formKey.currentState!.validate()) {
-                                    try {
-                                      setState(() {
-                                        _isLoading = true;
-                                      });
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const AddQuestions()));
-                                    } catch (e) {
-                                      await showErrorDialog(
-                                        context,
-                                        e.toString(),
-                                      );
-                                    }
-                                    setState(() {
-                                      _isLoading = false;
-                                    });
+                                  try {
+                                    uploadQuizData();
+                                  } catch (e) {
+                                    await showErrorDialog(
+                                      context,
+                                      e.toString(),
+                                    );
                                   }
                                 },
                                 child: const Text(
@@ -277,25 +269,13 @@ class _AddQuestionsState extends State<AddQuestions> {
                                   borderRadius: BorderRadius.circular(50),
                                 ),
                                 onPressed: () async {
-                                  if (_formKey.currentState!.validate()) {
-                                    try {
-                                      setState(() {
-                                        _isLoading = true;
-                                      });
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const AddQuestions()));
-                                    } catch (e) {
-                                      await showErrorDialog(
-                                        context,
-                                        e.toString(),
-                                      );
-                                    }
-                                    setState(() {
-                                      _isLoading = false;
-                                    });
+                                  try {
+                                    Navigator.pop(context);
+                                  } catch (e) {
+                                    await showErrorDialog(
+                                      context,
+                                      e.toString(),
+                                    );
                                   }
                                 },
                                 child: const Text(
@@ -319,5 +299,37 @@ class _AddQuestionsState extends State<AddQuestions> {
               ),
             ),
     );
+  }
+
+  uploadQuizData() {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      Map<String, String> questionMap = {
+        "question": _question.text,
+        "correct answer": _correctanswer.text,
+        "option2": _option2.text,
+        "option3": _option3.text,
+        "option4": _option4.text
+      };
+
+      print(widget.quizId);
+      databaseService.addQuestionData(questionMap, widget.quizId).then((value) {
+        _question.text = "";
+        _correctanswer.text = "";
+        _option2.text = "";
+        _option3.text = "";
+        _option4.text = "";
+        setState(() {
+          _isLoading = false;
+        });
+      }).catchError((e) {
+        print(e);
+      });
+    } else {
+      print("error is happening ");
+    }
   }
 }

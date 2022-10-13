@@ -37,6 +37,8 @@ dependencies:
   firebase_auth: ^3.8.0
   another_flushbar: ^1.12.29
   shared_preferences: ^2.0.15
+  cloud_firestore: ^3.5.1
+  random_string: ^2.3.1
 
 dev_dependencies:
   flutter_test:
